@@ -2,10 +2,10 @@
 
 namespace VaccineDistribution
 {
-    public class UserChoice
+     class UserChoice
     {
-
-        public static void PrintMenu(String[] options)
+         
+         static void PrintMenu(String[] options)
         {
             int i = 0;
             foreach (String option in options)
@@ -30,17 +30,21 @@ namespace VaccineDistribution
                                 "Total amount to be paid by Hospital",
                                 "Total Amount to be received by Manufacturer",
                                 "IncomeStatment Of Manufacturer",
+                                "Add Manufacturer",
+                                "Rename Hospital",
                                 "Exit"
-                };
-            int option;            
+            };
+            ManufacturerService manufacturerService = new ManufacturerService();
+            HospitalService hospitalService = new HospitalService();
+            int option;
             while (true)
             {
-               
+
                 PrintMenu(options);
                 try
                 {
                     option = Convert.ToInt32(Console.ReadLine());
-                   
+
                 }
                 catch (System.FormatException)
                 {
@@ -56,33 +60,39 @@ namespace VaccineDistribution
                 switch (option)
                 {
                     case 1:
-                        Manufacturer.RegisterHospital();
+                        manufacturerService.RegisterHospital();
                         break;
                     case 2:
-                        Manufacturer.SupplyVaccines();
+                        manufacturerService.SupplyVaccines();
                         break;
                     case 3:
-                        Hospital.TransferVaccines();
+                        hospitalService.TransferVaccines();
                         break;
                     case 4:
-                        Manufacturer.RemoveHospital();
+                        manufacturerService.RemoveHospital();
                         break;
                     case 5:
-                        Manufacturer.ShowListOfHospitals();
+                        manufacturerService.ShowListOfHospitals();
                         break;
                     case 6:
-                        Manufacturer.NumberOfVaccinesSupplied();
+                        manufacturerService.NumberOfVaccinesSupplied();
                         break;
                     case 7:
-                        Manufacturer.ExpectedRetunsPerHospital();
+                        manufacturerService.ExpectedRetunsPerHospital();
                         break;
                     case 8:
-                        Manufacturer.TotalReceivableAmount();
+                        manufacturerService.TotalReceivableAmount();
                         break;
                     case 9:
-                        Manufacturer.IncomeStatment();
+                        manufacturerService.IncomeStatment();
                         break;
                     case 10:
+                        hospitalService.CreateAndAddManufacturer();
+                        break;
+                    case 11:
+                        manufacturerService.RenameHospital();
+                        break; 
+                    case 12:
                         Environment.Exit(0);
                         break;
                     default:

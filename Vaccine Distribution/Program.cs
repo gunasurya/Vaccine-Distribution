@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace VaccineDistribution
+﻿namespace VaccineDistribution
 {
-    public class Program
+     class Program
     {
-       
-
         static void Main(string[] args)
         {
             UserChoice.UserChoiceInput();

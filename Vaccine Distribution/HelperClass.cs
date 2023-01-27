@@ -7,8 +7,8 @@ namespace VaccineDistribution
         
         public static string GenarateUniqueID(string hospitalName)
         {
-           
-             return hospitalName.Substring(0, 4) + DateTime.Today.ToString("dd-MM-yyyy");
+
+            return hospitalName.Substring(0, 4) + DateTime.Now.ToString("dd-MM-yyyy HH:m:s");
             
         }
         public static void RegistrationSuccess()

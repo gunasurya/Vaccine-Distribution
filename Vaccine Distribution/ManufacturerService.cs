@@ -3,8 +3,9 @@ using System.Linq;
 
 namespace VaccineDistribution
 {
-    public class ManufacturerService:Global
+    class ManufacturerService
     {
+        readonly Manufacturer m1 = new Manufacturer() { VaccineStock = 50000, ManufacturingCostPerDose = 15, PricePerDose = 20 };
         public void RegisterHospital()
         {
             try
@@ -31,7 +32,7 @@ namespace VaccineDistribution
                 string UniqueId = HelperClass.GenarateUniqueID(name);
                 Console.WriteLine($"\nThe Hospital id is:{UniqueId}");
                 var HospitalObj = new Hospital() { Id = UniqueId, Name = name, Capacity = capacity, VaccineBudget = 200000 };
-                HospitalList.Add(HospitalObj);
+                GlobalStorage.HospitalList.Add(HospitalObj);
                 HelperClass.RegistrationSuccess();
             }
             catch (Exception e)
@@ -42,8 +43,7 @@ namespace VaccineDistribution
         }
         public void SupplyVaccines()
         {
-            Manufacturer m1 = new Manufacturer() { VaccineStock=50000,ManufacturingCostPerDose=15,PricePerDose=20};
-            if (HospitalList.Count != 0)
+            if (GlobalStorage.HospitalList.Count != 0)
             {
                 Hospital hospital = null;
                 bool r = true;
@@ -52,7 +52,7 @@ namespace VaccineDistribution
                     ShowListOfHospitals();
                     Console.WriteLine("Enter Hospital ID");
                     string userInputID = Console.ReadLine();
-                    hospital = HospitalList.Find(h => h.Id == userInputID);
+                    hospital = GlobalStorage.HospitalList.Find(h => h.Id == userInputID);
                     if (hospital == null)
                     {
                         Console.WriteLine("Please Enter Valid Hospital Id");
@@ -80,7 +80,7 @@ namespace VaccineDistribution
                                     hospital.AvailableDose += supplyUserRequirment;
                                     hospital.HospitalTotalPayableAmount += m1.PricePerDose * supplyUserRequirment;
                                     hospital.VaccineBudget -= hospital.HospitalTotalPayableAmount;
-                                    totalManufacturerReceivableAmount += hospital.HospitalTotalPayableAmount;
+                                    m1.totalManufacturerReceivableAmount += hospital.HospitalTotalPayableAmount;
                                     m1.VaccineStock -= supplyUserRequirment;
                                     Console.WriteLine("Dose Supplied is: " + supplyUserRequirment);
                                     Console.WriteLine(hospital.VaccineBudget);
@@ -117,7 +117,7 @@ namespace VaccineDistribution
         }
         public void RemoveHospital()
         {
-            if (HospitalList.Count != 0)
+            if (GlobalStorage.HospitalList.Count != 0)
             {
                 bool a = true;
                 while (a)
@@ -125,14 +125,14 @@ namespace VaccineDistribution
                     ShowListOfHospitals();
                     Console.WriteLine("Enter the Hospital Id to be Deleted");
                     string deleteHospitalId = Console.ReadLine();
-                    Hospital hospitalObj = HospitalList.Find(hospital => hospital.Id == deleteHospitalId);
+                    Hospital hospitalObj = GlobalStorage.HospitalList.Find(hospital => hospital.Id == deleteHospitalId);
                     if (hospitalObj == null)
                     {
                         HelperClass.ErrorMsgHospitalId();
                     }
                     else
                     {
-                        HospitalList.Remove(hospitalObj);
+                        GlobalStorage.HospitalList.Remove(hospitalObj);
                         Console.WriteLine("---------------------------------------------------------------------------");
                         Console.WriteLine($"*** Hospital with Id {hospitalObj.Id} Removed Successfully ***");
                         Console.WriteLine("---------------------------------------------------------------------------");
@@ -149,10 +149,10 @@ namespace VaccineDistribution
         }
         public void ShowListOfHospitals()
         {
-            if (HospitalList.Count != 0)
+            if (GlobalStorage.HospitalList.Count != 0)
             {
 
-                HospitalList.ForEach(hospital =>
+                GlobalStorage.HospitalList.ForEach(hospital =>
                 {
                     Console.WriteLine($"Name: {hospital.Name} || UniqueId: {hospital.Id} || Capacity :{hospital.Capacity} || Doses Available: {hospital.AvailableDose}");
                 });
@@ -166,10 +166,10 @@ namespace VaccineDistribution
         }
         public void NumberOfVaccinesSupplied()
         {
-            if (HospitalList.Count != 0)
+            if (GlobalStorage.HospitalList.Count != 0)
             {
-                HospitalList.ForEach(hospital => {
-                    Console.WriteLine($"{HospitalList.IndexOf(hospital) + 1}. {hospital.Name}");
+                GlobalStorage.HospitalList.ForEach(hospital => {
+                    Console.WriteLine($"{GlobalStorage.HospitalList.IndexOf(hospital) + 1}. {hospital.Name}");
                 });
                 bool a = true;
                 while (a)
@@ -179,14 +179,14 @@ namespace VaccineDistribution
                         int HospitalIndex;
                         Console.WriteLine("Please Select the Hospital by Entering its No.");
                         HospitalIndex = int.Parse(Console.ReadLine());
-                        HospitalList.ForEach(hospital => {
-                            if (HospitalIndex <= 0 || HospitalList.Count < HospitalIndex)
+                        GlobalStorage.HospitalList.ForEach(hospital => {
+                            if (HospitalIndex <= 0 || GlobalStorage.HospitalList.Count < HospitalIndex)
                             {
                                 throw new Exception("Please Enter Valid serial No.");
                             }
                             else
                             {
-                                if (HospitalList[HospitalIndex - 1] == hospital)
+                                if (GlobalStorage.HospitalList[HospitalIndex - 1] == hospital)
                                 {
                                     Console.WriteLine("---------------------------------------------------------------------------");
                                     Console.WriteLine("The Total Number of Doses Supplied by Manufacturer: " + hospital.TotalDose);
@@ -214,15 +214,15 @@ namespace VaccineDistribution
         }
         public void TotalReceivableAmount()
         {
-            Console.WriteLine($"Total amount to be received by the Manufacturer is {totalManufacturerReceivableAmount}");
+            Console.WriteLine($"Total amount to be received by the Manufacturer is {m1.totalManufacturerReceivableAmount}");
         }
         public void ExpectedRetunsPerHospital()
         {
-            if (HospitalList.Count != 0)
+            if (GlobalStorage.HospitalList.Count != 0)
             {
-                HospitalList.ForEach(hospital =>
+                GlobalStorage.HospitalList.ForEach(hospital =>
                 {
-                    Console.WriteLine($"{HospitalList.IndexOf(hospital) + 1}. {hospital.Name}");
+                    Console.WriteLine($"{GlobalStorage.HospitalList.IndexOf(hospital) + 1}. {hospital.Name}");
                 });
                 bool b = true;
                 while (b)
@@ -232,16 +232,15 @@ namespace VaccineDistribution
                         int HospitalIndex;
                         Console.WriteLine("Please Select the Hospital by Entering its No.");
                         HospitalIndex = int.Parse(Console.ReadLine());
-                        HospitalList.ForEach(hospital =>
+                        GlobalStorage.HospitalList.ForEach(hospital =>
                         {
-                            if (HospitalIndex <= 0 || HospitalList.Count < HospitalIndex)
+                            if (HospitalIndex <= 0 || GlobalStorage.HospitalList.Count < HospitalIndex)
                             {
                                 throw new Exception("Hospital Serial No. starts from 1");
-
                             }
                             else
                             {
-                                if (HospitalList[HospitalIndex - 1] == hospital)
+                                if (GlobalStorage.HospitalList[HospitalIndex - 1] == hospital)
                                 {
                                     Console.WriteLine("---------------------------------------------------------------------------");
                                     Console.WriteLine($"Total amount to be paid by {hospital.Name} is : {hospital.HospitalTotalPayableAmount}");
@@ -250,7 +249,6 @@ namespace VaccineDistribution
                                 }
                             }
                         });
-
                     }
                     catch (Exception ex)
                     {
@@ -266,9 +264,8 @@ namespace VaccineDistribution
         }
         public void IncomeStatment()
         {
-            Manufacturer m1 = new Manufacturer() {PricePerDose = 20,ManufacturingCostPerDose=15 };   
             int vaccineSuppliedByManufacturer = 0;
-            HospitalList.ForEach((hospital) =>
+            GlobalStorage.HospitalList.ForEach((hospital) =>
             {
                 vaccineSuppliedByManufacturer += hospital.TotalDose;
             });
@@ -286,27 +283,44 @@ namespace VaccineDistribution
         
         public void RenameHospital()
         {
-            ShowListOfHospitals();
-            Console.WriteLine("Enter the Id of Hospital:");
-            string Id = Console.ReadLine();
-            Console.WriteLine("Enter New name of Hospital: ");
-            string newHspName = Console.ReadLine(); 
-            HospitalList.ForEach((hospital) => {
-                if(hospital.Id == Id) {
-                    hospital.Name = newHspName;
-                }
-                else
+            if (GlobalStorage.HospitalList.Count != 0)
+            {
+                bool a = true;
+                while (a)
                 {
-                    Console.WriteLine("Please Enter valid Hospital Id");
+                    ShowListOfHospitals();
+                    Console.WriteLine("Enter the Id of Hospital:");
+                    string Id = Console.ReadLine();
+                    while (Id == "")
+                    {
+                        Console.WriteLine("Empty Inputs are not Accepeted please re-enter the Valid Id");
+                        Console.WriteLine("Enter your name:");
+                        Id = Console.ReadLine();
+                    }
+                    Console.WriteLine("Enter New name of Hospital: ");
+                    string newHspName = Console.ReadLine();
+                    while (newHspName.Any(char.IsDigit) || newHspName == "" || newHspName.Length < 4)
+                    {
+                        Console.WriteLine("Enter your name again & check name doesn't have a numbers\n");
+                        Console.WriteLine("Enter your name:");
+                        newHspName = Console.ReadLine();
+                    }
+
+                    Hospital hospitalObj = GlobalStorage.HospitalList.Find(hospital => hospital.Id == Id);
+                    if (hospitalObj == null)
+                    {
+                        HelperClass.ErrorMsgHospitalId();
+                    }
+                    else
+                    {
+                        hospitalObj.Name = newHspName;
+                    }
                 }
-            });
-
-
-
+            }
+            else
+            {
+                Console.WriteLine("----------------------------------------------\n*** No Hospital Entity to Rename From Data ****\n----------------------------------------------");
+            }
         }
-
-
-
-
     }
 }
