@@ -31,7 +31,7 @@ namespace VaccineDistribution
                 int capacity = int.Parse(vaccCap);
                 string UniqueId = HelperClass.GenarateUniqueID(name);
                 Console.WriteLine($"\nThe Hospital id is:{UniqueId}");
-                var HospitalObj = new Hospital() { Id = UniqueId, Name = name, Capacity = capacity, VaccineBudget = 200000 };
+                var HospitalObj = new Hospital() { Id = UniqueId, Name = name, Capacity = capacity };
                 GlobalStorage.HospitalList.Add(HospitalObj);
                 HelperClass.RegistrationSuccess();
             }
@@ -72,18 +72,16 @@ namespace VaccineDistribution
                         if (int.TryParse(supplyUserRequirmenttext, out int number))
                         {
                             int supplyUserRequirment = Convert.ToInt32(supplyUserRequirmenttext);
-                            if ( m1.PricePerDose* supplyUserRequirment <= hospital.VaccineBudget)
+                            if (supplyUserRequirment + hospital.AvailableDose <= 10000)
                             {
                                 if (supplyUserRequirment > 0 && supplyUserRequirment <= m1.VaccineStock && supplyUserRequirment+hospital.AvailableDose <= hospital.Capacity)
                                 {
                                     hospital.TotalDose += supplyUserRequirment;
                                     hospital.AvailableDose += supplyUserRequirment;
                                     hospital.HospitalTotalPayableAmount += m1.PricePerDose * supplyUserRequirment;
-                                    hospital.VaccineBudget -= hospital.HospitalTotalPayableAmount;
                                     m1.totalManufacturerReceivableAmount += hospital.HospitalTotalPayableAmount;
                                     m1.VaccineStock -= supplyUserRequirment;
                                     Console.WriteLine("Dose Supplied is: " + supplyUserRequirment);
-                                    Console.WriteLine(hospital.VaccineBudget);
                                     Console.WriteLine(m1.VaccineStock);
                                     Console.WriteLine("--------------**** The Supply is Successful ****----------");
                                     x = false;

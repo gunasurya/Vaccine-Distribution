@@ -9,7 +9,6 @@
         public int TotalDose;
         public int SuppliedDose;
         public int HospitalTotalPayableAmount;
-        public int VaccineBudget;
     }
 }
 
